@@ -1,6 +1,5 @@
 <template>
   <div class="admin-shipping-method-form-view">
-    
     <div class="mb-3">
       <router-link :to="{ name: 'adminShippingMethodList' }" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Quay lại Danh sách PTVC
@@ -9,56 +8,100 @@
 
     <h1 class="mb-4">{{ isEditMode ? 'Chỉnh sửa Phương thức Vận chuyển' : 'Thêm Phương thức Vận chuyển mới' }}</h1>
 
-    
     <div v-if="loadingInitial" class="text-center my-5"> ... </div>
 
-    
-    <div v-else-if="initialError" class="alert alert-danger"> ... </div>
+    <div v-else-if="initialError" class="alert alert-danger">
+      {{ initialError }}
+      <button class="btn btn-sm btn-outline-primary ms-3" @click="fetchMethodData">Tải lại</button>
+    </div>
 
-    
     <form v-else @submit.prevent="handleSubmit" novalidate>
       <div class="card shadow-sm">
         <div class="card-body p-4">
-          
+
           <div v-if="submitError" class="alert alert-danger">{{ submitError }}</div>
 
           <div class="row g-3">
-            
+
             <div class="col-md-6">
               <label for="methodName" class="form-label">Tên Phương thức <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" :class="{'is-invalid': validationErrors.name}" id="methodName" v-model.trim="formData.name" required :disabled="submitting">
+              <input
+                type="text"
+                class="form-control"
+                :class="{'is-invalid': validationErrors.name}"
+                id="methodName"
+                v-model.trim="formData.name"
+                required
+                :disabled="submitting"
+              >
               <div class="invalid-feedback">{{ validationErrors.name }}</div>
             </div>
 
-            
             <div class="col-md-6">
               <label for="methodBaseCost" class="form-label">Phí cơ bản (VND) <span class="text-danger">*</span></label>
-              <input type="number" step="1000" min="0" class="form-control" :class="{'is-invalid': validationErrors.baseCost}" id="methodBaseCost" v-model.number="formData.baseCost" required :disabled="submitting">
+              <input
+                type="number"
+                step="1000"
+                min="0"
+                class="form-control"
+                :class="{'is-invalid': validationErrors.baseCost}"
+                id="methodBaseCost"
+                v-model.number="formData.baseCost"
+                required
+                :disabled="submitting"
+              >
               <div class="invalid-feedback">{{ validationErrors.baseCost }}</div>
             </div>
 
-            
             <div class="col-12">
               <label for="methodDescription" class="form-label">Mô tả</label>
-              <textarea class="form-control" id="methodDescription" rows="3" v-model="formData.description" :disabled="submitting"></textarea>
+              <textarea
+                class="form-control"
+                id="methodDescription"
+                rows="3"
+                v-model="formData.description"
+                :disabled="submitting"
+              ></textarea>
             </div>
 
-            
             <div class="col-md-6">
               <label for="methodEstMin" class="form-label">Số ngày dự kiến (Tối thiểu)</label>
-              <input type="number" min="0" class="form-control" :class="{'is-invalid': validationErrors.estimatedDaysMin}" id="methodEstMin" v-model.number="formData.estimatedDaysMin" :disabled="submitting">
+              <input
+                type="number"
+                min="0"
+                class="form-control"
+                :class="{'is-invalid': validationErrors.estimatedDaysMin}"
+                id="methodEstMin"
+                v-model.number="formData.estimatedDaysMin"
+                :disabled="submitting"
+              >
               <div class="invalid-feedback">{{ validationErrors.estimatedDaysMin }}</div>
             </div>
+
             <div class="col-md-6">
               <label for="methodEstMax" class="form-label">Số ngày dự kiến (Tối đa)</label>
-              <input type="number" min="0" class="form-control" :class="{'is-invalid': validationErrors.estimatedDaysMax || validationErrors.maxDaysValid}" id="methodEstMax" v-model.number="formData.estimatedDaysMax" :disabled="submitting">
+              <input
+                type="number"
+                min="0"
+                class="form-control"
+                :class="{'is-invalid': validationErrors.estimatedDaysMax || validationErrors.maxDaysValid}"
+                id="methodEstMax"
+                v-model.number="formData.estimatedDaysMax"
+                :disabled="submitting"
+              >
               <div class="invalid-feedback">{{ validationErrors.estimatedDaysMax || validationErrors.maxDaysValid }}</div>
             </div>
 
-            
             <div class="col-12">
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" id="methodIsActive" v-model="formData.isActive" :disabled="submitting">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="methodIsActive"
+                  v-model="formData.isActive"
+                  :disabled="submitting"
+                >
                 <label class="form-check-label" for="methodIsActive">
                   {{ formData.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
                 </label>
@@ -66,7 +109,6 @@
             </div>
           </div>
 
-          
           <hr class="my-4">
           <div class="d-flex justify-content-end">
             <router-link :to="{ name: 'adminShippingMethodList' }" class="btn btn-outline-secondary me-2" :disabled="submitting">Hủy</router-link>
@@ -83,7 +125,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { createAdminShippingMethod, updateAdminShippingMethod, getAdminShippingMethodById } from '@/http/modules/admin/adminShippingService.js';
 
 const props = defineProps({
@@ -93,11 +135,9 @@ const props = defineProps({
   }
 });
 
-const route = useRoute();
 const router = useRouter();
 
 const isEditMode = computed(() => !!props.id);
-
 
 const formData = reactive({
   name: '',
@@ -108,13 +148,11 @@ const formData = reactive({
   isActive: true,
 });
 
-
 const loadingInitial = ref(false);
 const initialError = ref(null);
 const submitting = ref(false);
 const submitError = ref(null);
 const validationErrors = reactive({});
-
 
 const fetchMethodData = async () => {
   if (!isEditMode.value) return;
@@ -126,9 +164,9 @@ const fetchMethodData = async () => {
 
     formData.name = method.name || '';
     formData.description = method.description || '';
-    formData.baseCost = method.baseCost;
-    formData.estimatedDaysMin = method.estimatedDaysMin;
-    formData.estimatedDaysMax = method.estimatedDaysMax;
+    formData.baseCost = method.baseCost ?? null;
+    formData.estimatedDaysMin = method.estimatedDaysMin ?? null;
+    formData.estimatedDaysMax = method.estimatedDaysMax ?? null;
     formData.isActive = method.isActive ?? true;
   } catch (err) {
     console.error(`Error fetching shipping method data for ID ${props.id}:`, err);
@@ -138,37 +176,55 @@ const fetchMethodData = async () => {
   }
 };
 
-
 const validateForm = () => {
   Object.keys(validationErrors).forEach(key => delete validationErrors[key]);
   let isValid = true;
-  if (!formData.name) { validationErrors.name = 'Tên phương thức là bắt buộc.'; isValid = false; }
-  if (formData.baseCost === null || formData.baseCost === undefined || formData.baseCost < 0) {
-    validationErrors.baseCost = 'Phí cơ bản phải là số không âm.'; isValid = false;
+
+  if (!formData.name) {
+    validationErrors.name = 'Tên phương thức là bắt buộc.';
+    isValid = false;
   }
+
+  if (formData.baseCost == null || formData.baseCost < 0) {
+    validationErrors.baseCost = 'Phí cơ bản phải là số không âm.';
+    isValid = false;
+  }
+
   if (formData.estimatedDaysMin !== null && formData.estimatedDaysMin < 0) {
-    validationErrors.estimatedDaysMin = 'Số ngày không được âm.'; isValid = false;
+    validationErrors.estimatedDaysMin = 'Số ngày không được âm.';
+    isValid = false;
   }
+
   if (formData.estimatedDaysMax !== null && formData.estimatedDaysMax < 0) {
-    validationErrors.estimatedDaysMax = 'Số ngày không được âm.'; isValid = false;
+    validationErrors.estimatedDaysMax = 'Số ngày không được âm.';
+    isValid = false;
   }
-  if (formData.estimatedDaysMin !== null && formData.estimatedDaysMax !== null && formData.estimatedDaysMax < formData.estimatedDaysMin) {
-    validationErrors.maxDaysValid = 'Số ngày tối đa phải lớn hơn hoặc bằng tối thiểu.'; isValid = false;
+
+  if (
+    formData.estimatedDaysMin !== null && formData.estimatedDaysMax !== null &&
+    formData.estimatedDaysMax < formData.estimatedDaysMin
+  ) {
+    validationErrors.maxDaysValid = 'Số ngày tối đa phải lớn hơn hoặc bằng tối thiểu.';
+    isValid = false;
   }
+
   return isValid;
 };
-
 
 const handleSubmit = async () => {
   submitError.value = null;
   if (!validateForm()) return;
 
   submitting.value = true;
-  const payload = { ...formData };
 
-  payload.estimatedDaysMin = payload.estimatedDaysMin === '' ? null : payload.estimatedDaysMin;
-  payload.estimatedDaysMax = payload.estimatedDaysMax === '' ? null : payload.estimatedDaysMax;
-
+  const payload = {
+    name: formData.name.trim(),
+    description: formData.description.trim(),
+    baseCost: formData.baseCost,
+    estimatedDaysMin: formData.estimatedDaysMin,
+    estimatedDaysMax: formData.estimatedDaysMax,
+    isActive: formData.isActive,
+  };
 
   try {
     if (isEditMode.value) {
@@ -181,9 +237,6 @@ const handleSubmit = async () => {
     console.error("Error submitting shipping method form:", err);
     submitError.value = err.response?.data?.message || `Đã có lỗi xảy ra.`;
 
-    if (err.response?.status === 400 && err.response?.data?.errors) {
-
-    }
     if (err.response?.status === 409) {
       validationErrors.name = err.response?.data?.message || "Tên phương thức vận chuyển đã tồn tại.";
     }
@@ -191,7 +244,6 @@ const handleSubmit = async () => {
     submitting.value = false;
   }
 };
-
 
 onMounted(() => {
   if (isEditMode.value) {
@@ -203,4 +255,3 @@ onMounted(() => {
 <style scoped>
 .is-invalid ~ .invalid-feedback { display: block; }
 </style>
-
