@@ -9,12 +9,8 @@
       </li>
 
       <!-- Các nút số trang -->
-      <li
-        v-for="pageNumber in visiblePageNumbers"
-        :key="pageNumber"
-        class="page-item"
-        :class="{ active: pageNumber - 1 === currentPage, disabled: pageNumber === '...' }"
-      >
+      <li v-for="pageNumber in visiblePageNumbers" :key="pageNumber" class="page-item"
+        :class="{ active: pageNumber - 1 === currentPage, disabled: pageNumber === '...' }">
         <a class="page-link" href="#" @click.prevent="changePage(pageNumber - 1)" v-if="pageNumber !== '...'">
           {{ pageNumber }}
         </a>
@@ -61,6 +57,7 @@ const changePage = (page) => {
 // Logic tính toán các nút trang hiển thị (có dấu '...')
 const visiblePageNumbers = computed(() => {
   const total = props.totalPages;
+  console.log('Pagination total pages:', total);
   const current = props.currentPage + 1; // Chuyển sang index từ 1 để dễ tính toán
   const maxVisible = props.maxVisibleButtons;
   const halfMax = Math.floor(maxVisible / 2);
@@ -80,8 +77,8 @@ const visiblePageNumbers = computed(() => {
     startPage = total - maxVisible + 1;
   }
   // Đảm bảo số lượng nút đúng bằng maxVisible khi total lớn
-  if(endPage - startPage + 1 < maxVisible && total > maxVisible){
-    if(startPage === 1) endPage = maxVisible;
+  if (endPage - startPage + 1 < maxVisible && total > maxVisible) {
+    if (startPage === 1) endPage = maxVisible;
     else startPage = total - maxVisible + 1;
   }
 
@@ -107,19 +104,21 @@ const visiblePageNumbers = computed(() => {
 
   return pages;
 });
-
 </script>
 
 <style scoped>
 .pagination {
   margin-top: 2rem;
 }
+
 .page-item.disabled .page-link {
   cursor: not-allowed;
 }
+
 .page-item.active .page-link {
   z-index: 3;
 }
+
 .page-item span.page-link {
   color: #6c757d;
   pointer-events: none;

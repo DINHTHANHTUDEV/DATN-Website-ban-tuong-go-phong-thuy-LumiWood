@@ -1,34 +1,41 @@
 <template>
   <div id="app">
-    <AppHeader :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }"/>
-    <AppSidebar/>
-    <main
-      class="main-content"
-      :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }"
-    >
+    <AppHeader :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }" />
+    <AppSidebar />
+    <main class="main-content" :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component"/>
+          <component :is="Component" />
         </transition>
       </router-view>
     </main>
     <!-- Giả sử AppFooter có class="app-footer" bên trong nó -->
-    <AppFooter class="app-footer" :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }"/>
+    <AppFooter class="app-footer" :class="{ 'shifted-by-sidebar': isSidebarOpen && isLargeScreen }" />
     <!-- Tích hợp Zalo Link Widget -->
     <ZaloLinkWidget />
     <!-- Chỉ hiển thị chat widget nếu không phải trang admin -->
-    <ChatWidget v-if="!isAdminRoute"/>
+    <ChatWidget v-if="!isAdminRoute" />
     <!-- ============================== -->
   </div>
 </template>
+
 <script setup>
-import {ref, onMounted, onUnmounted} from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useRoute } from 'vue-router'; // import để lấy thông tin route hiện tại
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppSidebar from "./components/layout/AppSidebar.vue";
 import AppFooter from "./components/layout/AppFooter.vue";
 import ChatWidget from "@/components/chat/ChatWidget.vue";
 import ZaloLinkWidget from '@/components/chat/ZaloLinkWidget.vue';
-import {Offcanvas} from "bootstrap";
+import { Offcanvas } from "bootstrap";
+
+const route = useRoute();
+
+// --- Khai báo biến isAdminRoute để kiểm tra route hiện tại có phải trang admin hay không ---
+// Dùng computed vì route.path là reactive, khi route thay đổi sẽ tự động cập nhật giá trị
+const isAdminRoute = computed(() => {
+  return route.path.startsWith('/admin');
+});
 
 const isLargeScreen = ref(false);
 const isSidebarOpen = ref(false);
@@ -75,30 +82,43 @@ onUnmounted(() => {
 
 <style>
 /* --- Global Styles --- */
-body { /* ... */ }
-#app { /* ... */ }
+body {
+  /* ... */
+}
+
+#app {
+  /* ... */
+}
 
 /* === Transitions & Shifting === */
 .main-content,
-.app-footer { /* Thêm .app-footer vào đây */
+.app-footer {
+  /* Thêm .app-footer vào đây */
   /* Đồng bộ transition với Bootstrap Offcanvas */
   transition: margin-left 0.3s ease;
 }
 
 /* Page transition */
 .fade-enter-active,
-.fade-leave-active { /* ... */ }
+.fade-leave-active {
+  /* ... */
+}
+
 .fade-enter-from,
-.fade-leave-to { /* ... */ }
+.fade-leave-to {
+  /* ... */
+}
 
 
 /* === Desktop Styles === */
 @media (min-width: 992px) {
+
   /* Áp dụng margin khi sidebar mở */
   .main-content.shifted-by-sidebar,
   .app-header.shifted-by-sidebar,
   .app-footer.shifted-by-sidebar {
-    margin-left: 280px; /* Bằng chiều rộng sidebar */
+    margin-left: 280px;
+    /* Bằng chiều rộng sidebar */
   }
 
   /* Ngăn backdrop của Bootstrap hiển thị trên desktop */
@@ -114,12 +134,14 @@ body { /* ... */ }
 
 /* === Mobile Styles === */
 @media (max-width: 991.98px) {
+
   /* Reset margin trên mobile */
   .main-content.shifted-by-sidebar,
   .app-header.shifted-by-sidebar,
   .app-footer.shifted-by-sidebar {
     margin-left: 0;
   }
+
   /* Backdrop sẽ tự hiển thị trên mobile theo mặc định của Bootstrap */
 }
 </style>

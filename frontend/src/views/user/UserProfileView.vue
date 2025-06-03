@@ -35,7 +35,7 @@
 
               <dt class="col-sm-4">Hạng thành viên:</dt>
               <dd class="col-sm-8">
-                <span class="badge fs-6" :class="getTierClass(userProfile.tier)">
+                <span class="badge fs-6 bg-primary" :class="getTierClass(userProfile.tier)">
                   {{ formatTier(userProfile.tier) }}
                 </span>
               </dd>
@@ -60,13 +60,8 @@
             <form @submit.prevent="handleUpdateProfile">
               <div class="mb-3">
                 <label for="profileFullName" class="form-label">Họ và Tên</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="profileFullName"
-                  v-model="updateFormData.fullName"
-                  :disabled="updatingProfile"
-                />
+                <input type="text" class="form-control" id="profileFullName" v-model="updateFormData.fullName"
+                  :disabled="updatingProfile" />
               </div>
               <!-- Add other updatable fields like email here -->
               <button type="submit" class="btn btn-primary" :disabled="updatingProfile">
@@ -92,46 +87,24 @@
             <form @submit.prevent="handleChangePassword">
               <div class="mb-3">
                 <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="currentPassword"
-                  v-model="passwordFormData.currentPassword"
-                  required
-                  :disabled="changingPassword"
-                />
+                <input type="password" class="form-control" id="currentPassword"
+                  v-model="passwordFormData.currentPassword" required :disabled="changingPassword" />
               </div>
               <div class="mb-3">
                 <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  id="newPassword"
-                  v-model="passwordFormData.newPassword"
-                  required
-                  :disabled="changingPassword"
-                />
+                <input type="password" class="form-control" id="newPassword" v-model="passwordFormData.newPassword"
+                  required :disabled="changingPassword" />
               </div>
               <div class="mb-3">
                 <label for="confirmNewPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                <input
-                  type="password"
-                  class="form-control"
-                  :class="{ 'is-invalid': passwordMismatch }"
-                  id="confirmNewPassword"
-                  v-model="passwordFormData.confirmNewPassword"
-                  required
-                  :disabled="changingPassword"
-                />
+                <input type="password" class="form-control" :class="{ 'is-invalid': passwordMismatch }"
+                  id="confirmNewPassword" v-model="passwordFormData.confirmNewPassword" required
+                  :disabled="changingPassword" />
                 <div v-if="passwordMismatch" class="invalid-feedback">
                   Mật khẩu xác nhận không khớp.
                 </div>
               </div>
-              <button
-                type="submit"
-                class="btn btn-secondary"
-                :disabled="changingPassword || passwordMismatch"
-              >
+              <button type="submit" class="btn btn-secondary" :disabled="changingPassword || passwordMismatch">
                 <span v-if="changingPassword" class="spinner-border spinner-border-sm me-1"></span>
                 Đổi mật khẩu
               </button>
@@ -146,9 +119,7 @@
         <div class="card shadow-sm mb-4">
           <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Đơn hàng gần đây</h5>
-            <router-link :to="{ name: 'orderHistory' }" class="btn btn-sm btn-outline-primary"
-              >Xem tất cả</router-link
-            >
+            <router-link :to="{ name: 'orderHistory' }" class="btn btn-sm btn-outline-primary">Xem tất cả</router-link>
           </div>
           <div class="card-body p-0">
             <div v-if="loadingOrders" class="text-center p-3">
@@ -158,41 +129,26 @@
               {{ errorOrders }}
             </div>
             <ul v-else-if="recentOrders.length > 0" class="list-group list-group-flush">
-              <li
-                v-for="order in recentOrders"
-                :key="order.orderId"
-                class="list-group-item px-3 py-2"
-              >
+              <li v-for="order in recentOrders" :key="order.orderId" class="list-group-item px-3 py-2">
                 <div class="d-flex justify-content-between">
-                  <router-link
-                    :to="{ name: 'userOrderDetail', params: { orderId: order.orderId } }"
-                    class="fw-medium"
-                    >#{{ order.orderId }}</router-link
-                  >
+                  <router-link :to="{ name: 'userOrderDetail', params: { orderId: order.orderId } }" class="fw-medium">
+                    {{ order.code ? order.code : ('#' + order.orderId) }}
+                  </router-link>
                   <span class="fw-bold">{{ formatCurrency(order.totalAmount) }}</span>
                 </div>
-                <small class="text-muted d-block"
-                  >{{ formatDate(order.orderDate) }} -
-                  <span :class="getStatusClass(order.status)">{{
-                    formatStatus(order.status)
-                  }}</span></small
-                >
+                <small class="text-muted d-block">
+                  {{ formatDate(order.orderDate) }} -
+                  <span :class="getStatusClass(order.status)">
+                    {{ formatStatus(order.status) }}
+                  </span>
+                </small>
               </li>
             </ul>
+
+
             <div v-else class="text-muted text-center p-3">Bạn chưa có đơn hàng nào.</div>
           </div>
         </div>
-
-        <!-- Address Management (Optional - Requires separate implementation) -->
-        <!--
-        <div class="card shadow-sm">
-          <div class="card-header bg-light"><strong>Sổ địa chỉ</strong></div>
-          <div class="card-body">
-             <p>Quản lý địa chỉ giao hàng của bạn.</p>
-             <button class="btn btn-outline-secondary">Quản lý địa chỉ</button>
-          </div>
-        </div>
-        -->
       </div>
     </div>
   </div>
@@ -207,8 +163,10 @@ import {
   getUserProfile,
   updateUserProfile,
   changeUserPassword,
+  getRecentOrders,
 } from "@/http/modules/public/userService.js";
-import { getUserOrders } from "@/http/modules/public/orderService.js";
+// import { getUserOrders } from "@/http/modules/public/orderService.js";
+
 
 import {
   formatCurrency,
@@ -286,9 +244,15 @@ const fetchRecentOrders = async () => {
   loadingOrders.value = true;
   errorOrders.value = null;
   try {
-    const params = { page: 0, size: 5, sort: "orderDate,desc" };
-    const response = await getUserOrders(params);
-    recentOrders.value = response.data?.content || [];
+    const response = await getRecentOrders();
+    // Nếu API trả về mảng đơn hàng
+    recentOrders.value = (response.data || []).map(order => ({
+      orderId: order.id,    // Key để router-link & v-for
+      code: order.code,     // Hiển thị #MU-xxxx nếu có
+      orderDate: order.orderDate,
+      status: order.status,
+      totalAmount: order.totalAmount
+    }));
   } catch (err) {
     console.error("Error fetching recent orders:", err);
     errorOrders.value = "Lỗi tải đơn hàng gần đây.";
@@ -296,6 +260,8 @@ const fetchRecentOrders = async () => {
     loadingOrders.value = false;
   }
 };
+
+
 
 
 const handleUpdateProfile = async () => {
@@ -358,20 +324,25 @@ onMounted(() => {
 .user-profile-view {
   min-height: 70vh;
 }
+
 .card-header {
   font-weight: 500;
 }
+
 dt {
   font-weight: 500;
   color: #6c757d;
 }
+
 dd {
   margin-bottom: 0.75rem;
 }
+
 .badge.fs-6 {
   padding: 0.4em 0.8em;
 }
-.is-invalid ~ .invalid-feedback {
+
+.is-invalid~.invalid-feedback {
   display: block;
 }
 </style>
