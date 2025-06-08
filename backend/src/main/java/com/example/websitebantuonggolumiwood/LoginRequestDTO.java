@@ -1,4 +1,4 @@
-package com.example.websitebantuonggolumiwood.auth.dto;
+package com.example.websitebantuonggolumiwood;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

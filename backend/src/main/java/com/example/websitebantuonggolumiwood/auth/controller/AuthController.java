@@ -1,6 +1,6 @@
 package com.example.websitebantuonggolumiwood.auth.controller;
 
-import com.example.websitebantuonggolumiwood.auth.dto.LoginRequestDTO;
+import com.example.websitebantuonggolumiwood.LoginRequestDTO;
 import com.example.websitebantuonggolumiwood.auth.dto.RegisterRequestDTO;
 import com.example.websitebantuonggolumiwood.auth.entity.User;
 import com.example.websitebantuonggolumiwood.auth.security.jwt.JwtTokenProvider;
